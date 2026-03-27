@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Aditi 😄</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{min-height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#89f7fe,#66a6ff);padding:15px;overflow-x:hidden;}
+.container{background:white;border-radius:20px;padding:20px;max-width:500px;width:100%;box-shadow:0 15px 40px rgba(0,0,0,0.15);text-align:center;position:relative;z-index:2;}
+h1{color:#5a54ff;margin-bottom:8px;}
+p{color:#555;margin-bottom:15px;font-size:14px;}
+button{border:none;padding:10px 14px;border-radius:25px;margin:5px;cursor:pointer;transition:.3s;font-size:13px;}
+button:hover{transform:scale(1.05);} 
+.primary{background:#5a54ff;color:white;}
+.secondary{background:#ffb347;color:white;}
+.fun{background:#ff6b81;color:white;}
+.hidden{display:none;}
+.riddle{margin-top:15px;font-weight:600;color:#5a54ff;}
+.options button{display:block;width:100%;margin-top:6px;background:#f0f3ff;color:#333;}
+.score{margin-top:10px;font-weight:600;color:#5a54ff;}
+.result{margin-top:15px;font-weight:600;color:#ff6b81;}
+canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:1;}
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div class="container">
+<h1>Hey Aditi 😄</h1>
+<p>Let's play something fun... 10 riddles challenge! If you win, you must smile 😌</p>
+
+<button class="primary" onclick="startGame()">Start Riddles 🎮</button>
+<button class="secondary" onclick="showJoke()">Random Joke 😂</button>
+<button class="fun" onclick="compliment()">Give Compliment ✨</button>
+
+<div id="joke" class="result hidden"></div>
+<div id="compliment" class="result hidden"></div>
+
+<div id="game" class="hidden">
+<div class="riddle" id="question"></div>
+<div class="options" id="options"></div>
+<div class="score">Score: <span id="score">0</span>/10</div>
+</div>
+
+<div id="final" class="result hidden"></div>
+
+</div>
+
+<script>
+const riddles=[
+{q:"What has to be broken before you can use it?",o:["Egg","Phone","Door","Smile"],a:0},
+{q:"I’m tall when I’m young, and short when I’m old. What am I?",o:["Tree","Candle","Friendship","Aditi"],a:1},
+{q:"What month has 28 days?",o:["February","All of them","January","None"],a:1},
+{q:"What is full of holes but still holds water?",o:["Sponge","Bucket","Heart","Cloud"],a:0},
+{q:"What gets wetter the more it dries?",o:["Rain","Towel","Tears","Soap"],a:1},
+{q:"What has hands but can’t clap?",o:["Clock","Baby","Robot","Friend"],a:0},
+{q:"What has a face and two hands but no arms or legs?",o:["Clock","Emoji","Mirror","Aditi"],a:0},
+{q:"What can travel around the world while staying in a corner?",o:["Stamp","Phone","Shadow","Smile"],a:0},
+{q:"What goes up but never comes down?",o:["Balloon","Age","Rain","Temperature"],a:1},
+{q:"What is yours but others use it more than you?",o:["Name","Phone","Notebook","Smile"],a:0}
+];
+
+let current=0;
+let score=0;
+
+function vibrate(p=40){ if(navigator.vibrate){navigator.vibrate(p);} }
+
+function startGame(){
+ document.getElementById('game').classList.remove('hidden');
+ document.getElementById('final').classList.add('hidden');
+ current=0;score=0;
+ loadQuestion();
+}
+
+function loadQuestion(){
+ if(current>=riddles.length){finish();return;}
+ let r=riddles[current];
+ document.getElementById('question').innerText=`Riddle ${current+1}: ${r.q}`;
+ let opts="";
+ r.o.forEach((opt,i)=>{
+ opts+=`<button onclick="answer(${i})">${opt}</button>`;
+ });
+ document.getElementById('options').innerHTML=opts;
+ document.getElementById('score').innerText=score;
+}
+
+function answer(i){
+ let r=riddles[current];
+ if(i===r.a){score++;vibrate([50,30,50]);}
+ else{vibrate(20);} 
+ current++;
+ loadQuestion();
+}
+
+function finish(){
+ document.getElementById('game').classList.add('hidden');
+ let msg="";
+ if(score>=8) msg="Aditi you're a genius AND you must smile now 😎✨";
+ else if(score>=5) msg="Nice! But I think you smiled already 😄";
+ else msg="You lost... punishment: smile immediately 😂";
+ document.getElementById('final').innerText=msg;
+ document.getElementById('final').classList.remove('hidden');
+ launchConfetti();
+}
+
+function showJoke(){
+ const jokes=[
+ "Why don’t besties fight? Because one smile solves everything 😄",
+ "You’re not Google… but you have everything I search for 😂",
+ "If smiling was a job, you'd be CEO 😎",
+ "I told my phone about you… now it autocorrects to Amazing ✨",
+ "Warning: excessive smiling may occur 😌"
+ ];
+ document.getElementById('joke').innerText=jokes[Math.floor(Math.random()*jokes.length)];
+ document.getElementById('joke').classList.remove('hidden');
+}
+
+function compliment(){
+ const list=[
+ "You're cooler than WiFi 😎",
+ "Your smile > everything ✨",
+ "Certified mood lifter 💛",
+ "You make boring days fun 🌈",
+ "Aditi = happiness source 😄"
+ ];
+ document.getElementById('compliment').innerText=list[Math.floor(Math.random()*list.length)];
+ document.getElementById('compliment').classList.remove('hidden');
+}
+
+// Confetti
+const canvas=document.getElementById("confetti");
+const ctx=canvas.getContext("2d");
+let pieces=[];
+
+function resizeCanvas(){
+ canvas.width=window.innerWidth;
+ canvas.height=window.innerHeight;
+}
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+
+function launchConfetti(){
+ pieces=[];
+ for(let i=0;i<150;i++){
+ pieces.push({
+ x:Math.random()*canvas.width,
+ y:Math.random()*canvas.height- canvas.height,
+ r:Math.random()*6+4,
+ d:Math.random()*150,
+ color:`hsl(${Math.random()*360},100%,60%)`,
+ tilt:Math.random()*10-10
+ });
+ }
+ animateConfetti();
+}
+
+function animateConfetti(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ pieces.forEach(p=>{
+ ctx.beginPath();
+ ctx.fillStyle=p.color;
+ ctx.fillRect(p.x,p.y,p.r,p.r);
+ });
+ updateConfetti();
+ requestAnimationFrame(animateConfetti);
+}
+
+function updateConfetti(){
+ pieces.forEach(p=>{
+ p.y+=2;
+ p.x+=Math.sin(p.d);
+ if(p.y>canvas.height){p.y=-10;}
+ });
+}
+</script>
+
+</body>
+</html>
